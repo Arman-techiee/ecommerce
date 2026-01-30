@@ -1,7 +1,14 @@
 import React, { useState } from 'react'
+import { useCart } from '../../hooks/useCart';
 
 function ProductCard({product}) {
   const [isAdded, setIsAdded] = useState(false)
+  const { addToCart } = useCart();
+
+  function addProductToCart() {
+    addToCart(product);
+    handleAddCart();
+  }
 
   const handleAddCart = () => {
     setIsAdded(true)
@@ -38,7 +45,7 @@ function ProductCard({product}) {
 
       {/* Button */}
       <button 
-        onClick={handleAddCart}
+        onClick={addProductToCart}
         className={`w-full font-semibold py-2 px-4 rounded-lg transition ${
           isAdded 
             ? 'bg-green-500 text-white' 

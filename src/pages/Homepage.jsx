@@ -1,13 +1,16 @@
 import React from 'react'
 import WelcomeBanner from '../components/home/WelcomeBanner'
 import ProductCard from '../components/products/ProductCard'
+import PracticeState from '../components/common/PracticeState'
 import { products } from '../data/productsData'
+import { Link } from 'react-router-dom'
 
 function Homepage() {
   return (
     <div className="min-h-screen bg-white">
       <WelcomeBanner user="Arman" />
-      
+      <PracticeState />
+    
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-gray-900 mb-3">Featured Products</h2>
@@ -28,9 +31,11 @@ function Homepage() {
       <div className="bg-gray-100 py-12 mt-12">
         <div className="max-w-4xl mx-auto text-center px-4">
           <h3 className="text-3xl font-bold text-gray-900 mb-4">Want to see more?</h3>
-          <button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg transition">
-            View All Products
-          </button>
+          <Link to="/products" className="block mb-4">
+            <button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg transition">
+              View All Products
+            </button>
+          </Link>
         </div>
       </div>
     </div>
