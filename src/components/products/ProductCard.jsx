@@ -3,11 +3,17 @@ import { useCart } from '../../hooks/useCart';
 
 function ProductCard({product}) {
   const [isAdded, setIsAdded] = useState(false)
-  const { addToCart } = useCart();
+  const { addToCart, isInCart, removeFromCart } = useCart();
+  const isCart = isInCart(product.id);
+  console.log("isCart:", isCart);
 
   function addProductToCart() {
     addToCart(product);
     handleAddCart();
+  }
+
+  function removeProductFromCart() {
+    removeFromCart(product.id);
   }
 
   const handleAddCart = () => {
@@ -44,7 +50,12 @@ function ProductCard({product}) {
       </div>
 
       {/* Button */}
-      <button 
+      {isCart ? (
+        <button onClick={removeProductFromCart} className="w-full font-semibold py-2 px-4 rounded-lg bg-red-500 text-white hover:bg-red-600 transition">
+          Remove from cart
+        </button>
+      ) : (
+        <button 
         onClick={addProductToCart}
         className={`w-full font-semibold py-2 px-4 rounded-lg transition ${
           isAdded 
@@ -54,6 +65,8 @@ function ProductCard({product}) {
       >
         {isAdded ? '✓ Added!' : 'Add to Cart'}
       </button>
+      )}
+      
     </div>
   )
 }

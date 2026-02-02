@@ -1,8 +1,30 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import ProductCard from '../components/products/ProductCard'
-import { products } from '../data/productsData'
 
-function Productspage() {
+export default function Productspage() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const response = await fetch('https://fakestoreapi.com/products');
+        const data = await response.json();
+        setProducts(data);
+        setLoading(false);  
+      }
+      catch(error) {
+        console.error('Error fetching products', error);
+        setLoading(false);
+      }
+    }
+    fetchProducts();
+  }, []);
+
+  if (loading) {
+    return <div className="text-center py-16">Loading...</div>;
+  }
+
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -23,5 +45,3 @@ function Productspage() {
     </div>
   )
 }
-
-export default Productspage
