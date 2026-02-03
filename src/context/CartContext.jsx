@@ -3,27 +3,36 @@ import { createContext, useContext, useState } from 'react'
 export const CartContext = createContext();
 
 function CartProvider({ children }) {
-    const[items, setItems] = useState([])
+    const [cartItems, setCartItems] = useState(() => {
+    
+    const savedCart = localStorage.getItem('cart');
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
 
     const addToCart = (product) => {
-      const exists = items.find(item => item.id === product.id);
+      const exists = cartItems.find(item => item.id === product.id);
       if(exists) return;
-        setItems(prev => [...prev, product])
-    }
-    const removeFromCart = (productId) => {
-      setItems(prev => prev.filter(item => item.id !== productId));
+      const updatedCart = [...cartItems, product];
+      setCartItems(updatedCart);
+      localStorage.setItem('cart', JSON.stringify(updatedCart));
+    } 
+    function removeFromCart(productId) {
+      const updatedItems = cartItems.filter(item => item.id !== productId);
+      setCartItems(updatedItems);
+      localStorage.setItem('cart', JSON.stringify(updatedItems));
     }
     function isInCart(productId) {
-      return items.some(item => item.id === productId);
+      return cartItems.some(item => item.id === productId);
     }
 
-    const cartCount = items.length;
+    const cartCount = cartItems.length;
 
   return (
-    <CartContext.Provider value={{items, addToCart, removeFromCart, cartCount, isInCart}}>
+    <CartContext.Provider value={{cartItems, addToCart, removeFromCart, cartCount, isInCart}}>
         {children}
     </CartContext.Provider>
   )
 }
+
 
 export default CartProvider

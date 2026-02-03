@@ -3,11 +3,11 @@ import { useCart } from '../hooks/useCart';
 import ProductCard from '../components/products/ProductCard';
 
 function CartPage() {
-  const {items} = useCart()
-  console.log("items in cart:", items)
+  const { cartItems = [] } = useCart()
+
   return (
      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {items.map((product) => (
+          {cartItems.map((product) => (
             <ProductCard 
               key={product.id}
               product={product}

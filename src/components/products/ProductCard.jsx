@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { useCart } from '../../hooks/useCart';
+import { Link } from 'react-router-dom';
+
 
 function ProductCard({product}) {
   const [isAdded, setIsAdded] = useState(false)
@@ -22,7 +24,7 @@ function ProductCard({product}) {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-4">
+    <Link to={`/products/${product.id}`} className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-4">
       {/* Image */}
       <div className="relative overflow-hidden bg-gray-200 h-48 rounded-lg mb-4">
         <img 
@@ -67,7 +69,7 @@ function ProductCard({product}) {
       </button>
       )}
       
-    </div>
+    </Link>
   )
 }
 
