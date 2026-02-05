@@ -478,49 +478,82 @@ function SingleProductPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-8">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-        <div className="flex justify-center bg-slate-50 dark:bg-slate-900 rounded-2xl p-8 border border-slate-100 dark:border-slate-800">
-          <img
-            src={product.image}
-            alt={product.title}
-            className="max-w-full max-h-[500px] object-contain rounded-lg"
-          />
+    <div className="min-h-screen bg-[#f7f4ef] dark:bg-[#0b0b0c] relative overflow-hidden">
+      <div className="pointer-events-none absolute -top-24 right-0 h-72 w-72 rounded-full bg-amber-200/40 blur-[120px] dark:bg-amber-500/10"></div>
+      <div className="pointer-events-none absolute bottom-0 left-0 h-80 w-80 rounded-full bg-neutral-200/50 blur-[140px] dark:bg-slate-800/60"></div>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative">
+        <div className="mb-8 text-sm text-[#8a8174] dark:text-slate-400">
+          Home <span className="mx-2">/</span> Products <span className="mx-2">/</span>
+          <span className="text-[#2b2a26] dark:text-slate-200">{product.title}</span>
         </div>
-        <div className="py-4">
-          <div className="text-sm text-slate-500 uppercase tracking-wide mb-2">{product.category}</div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 leading-tight">
-            {product.title}
-          </h1>
-          <div className="flex items-center gap-2 mb-6">
-            <span className="text-amber-400 text-xl">★★★★☆</span>
-            <span className="text-slate-500 text-sm">
-              {product.rating?.rate || '4.5'} ({product.rating?.count || '128'} reviews)
-            </span>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+          <div className="rounded-[28px] border border-[#e5dccb] bg-gradient-to-br from-white/95 via-white/90 to-[#fff7e6]/80 p-8 shadow-[0_28px_80px_-50px_rgba(0,0,0,0.45)] dark:border-slate-800 dark:from-slate-950/80 dark:via-slate-950/70 dark:to-slate-900/70">
+            <div className="flex justify-center bg-white/70 dark:bg-slate-950/60 rounded-2xl p-6 border border-[#efe5d3] dark:border-slate-800">
+              <img
+                src={product.image}
+                alt={product.title}
+                className="max-w-full max-h-[520px] object-contain"
+              />
+            </div>
+            <div className="mt-6 grid grid-cols-3 gap-3 text-xs text-[#6b645a] dark:text-slate-400">
+              <div className="rounded-xl border border-[#e5dccb] bg-white/80 px-3 py-3 text-center">Authentic materials</div>
+              <div className="rounded-xl border border-[#e5dccb] bg-white/80 px-3 py-3 text-center">Premium finish</div>
+              <div className="rounded-xl border border-[#e5dccb] bg-white/80 px-3 py-3 text-center">Limited stock</div>
+            </div>
           </div>
-          <div className="text-4xl font-bold text-slate-900 dark:text-white mb-6">Rs {product.price}</div>
-          <p className="text-slate-700 dark:text-slate-300 leading-relaxed mb-8 text-base">
-            {product.description}
-          </p>
-          <button
-            onClick={() => {
-              if (!isInCart(product.id)) {
-                addToCart(product)
-                setIsAdded(true)
-                setTimeout(() => setIsAdded(false), 2000)
-              }
-            }}
-            disabled={isInCart(product.id)}
-            className={`w-full max-w-sm px-8 py-4 text-lg font-semibold rounded-lg transition-all duration-300 ${
-              isInCart(product.id)
-                ? 'bg-slate-300 dark:bg-slate-700 cursor-not-allowed text-slate-600 dark:text-slate-300'
-                : isAdded
-                ? 'bg-amber-500 hover:bg-amber-600 text-white'
-                : 'bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 text-white'
-            }`}
-          >
-            {isInCart(product.id) ? 'Already in Cart' : isAdded ? '✓ Added to Cart' : 'Add to Cart'}
-          </button>
+          <div className="rounded-[28px] border border-[#e5dccb] bg-white/90 p-8 shadow-[0_22px_60px_-40px_rgba(0,0,0,0.4)] backdrop-blur dark:border-slate-800 dark:bg-slate-900/70">
+            <div className="flex flex-wrap items-center gap-3 mb-4">
+              <span className="rounded-full border border-[#d5b66f] bg-[#fff4d6] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.3em] text-[#8a6a2d] dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-200">
+                {product.category}
+              </span>
+              <span className="rounded-full border border-[#e5dccb] bg-white/80 px-3 py-1 text-xs font-semibold text-[#5a554a] dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300">
+                Curated selection
+              </span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-semibold text-[#1f1e1b] dark:text-white mb-4 leading-tight">
+              {product.title}
+            </h1>
+            <div className="flex items-center gap-3 mb-6">
+              <span className="text-[#caa65b] text-lg">★★★★★</span>
+              <span className="text-[#6b645a] text-sm">
+                {product.rating?.rate || '4.5'} ({product.rating?.count || '128'} reviews)
+              </span>
+            </div>
+            <div className="flex items-end gap-4 mb-6">
+              <div className="text-4xl font-semibold text-[#1f1e1b] dark:text-white">Rs {product.price}</div>
+              <div className="text-sm text-[#9a9387] line-through">Rs {Math.round(product.price * 1.2)}</div>
+            </div>
+            <p className="text-[#4b4a44] dark:text-slate-300 leading-relaxed mb-8 text-base">
+              {product.description}
+            </p>
+            <div className="grid gap-3 mb-8 sm:grid-cols-2">
+              <div className="rounded-2xl border border-[#e5dccb] bg-[#fffaf2] px-4 py-3 text-sm text-[#5a554a] dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-300">
+                Complimentary premium packaging
+              </div>
+              <div className="rounded-2xl border border-[#e5dccb] bg-[#fffaf2] px-4 py-3 text-sm text-[#5a554a] dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-300">
+                Ships within 24–48 hours
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                if (!isInCart(product.id)) {
+                  addToCart(product)
+                  setIsAdded(true)
+                  setTimeout(() => setIsAdded(false), 2000)
+                }
+              }}
+              disabled={isInCart(product.id)}
+              className={`w-full px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300 ${
+                isInCart(product.id)
+                  ? 'bg-[#e5dccb] cursor-not-allowed text-[#7b6f60] dark:bg-slate-700 dark:text-slate-300'
+                  : isAdded
+                  ? 'bg-[#caa65b] hover:bg-[#b89245] text-white'
+                  : 'bg-[#1b1b1f] hover:bg-black text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200'
+              }`}
+            >
+              {isInCart(product.id) ? 'Already in Cart' : isAdded ? '✓ Added to Cart' : 'Add to Cart'}
+            </button>
+          </div>
         </div>
       </div>
     </div>

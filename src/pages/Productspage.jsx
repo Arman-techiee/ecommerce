@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import ProductCard from '../components/products/ProductCard'
 import categoryData from '../data/categories'
 import SearchProduct from '../components/products/SearchProduct';
+import ProductRange from '../components/products/ProductRange'
+import FilterByRating from '../components/products/FilterByRating'
 import { useLocation } from 'react-router-dom'
 
 // Additional mock products to supplement the API
@@ -429,6 +431,10 @@ export default function Productspage() {
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const[search, setSearch]=useState('');
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 0 })
+  const [priceBounds, setPriceBounds] = useState({ min: 0, max: 0 })
+  const [priceTouched, setPriceTouched] = useState(false)
+  const [minRating, setMinRating] = useState(0)
 
   useEffect(() => {
     const params = new URLSearchParams(location.search)
@@ -458,6 +464,33 @@ export default function Productspage() {
     }
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    if (products.length === 0) return
+    const prices = products.map((product) => Number(product.price) || 0)
+    const min = Math.floor(Math.min(...prices))
+    const max = Math.ceil(Math.max(...prices))
+    setPriceBounds({ min, max })
+    if (!priceTouched) {
+      setPriceRange({ min, max })
+    }
+  }, [products, priceTouched])
+
+  const filteredProducts = useMemo(() => {
+    const hasRange = priceBounds.max > priceBounds.min
+    return products.filter((product) => {
+      const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory
+      const matchesSearch = search === '' ||
+        product.title.toLowerCase().includes(search.toLowerCase()) ||
+        product.description.toLowerCase().includes(search.toLowerCase()) ||
+        product.category.toLowerCase().includes(search.toLowerCase())
+      const price = Number(product.price) || 0
+      const matchesPrice = !hasRange || (price >= priceRange.min && price <= priceRange.max)
+      const rating = Number(product.rating?.rate) || 0
+      const matchesRating = minRating === 0 || rating >= minRating
+      return matchesCategory && matchesSearch && matchesPrice && matchesRating
+    })
+  }, [products, selectedCategory, search, priceRange, priceBounds, minRating])
 
   if (loading) {
     return (
@@ -501,130 +534,150 @@ export default function Productspage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div className="min-h-screen bg-[#f7f4ef] dark:bg-[#0b0b0c] relative overflow-hidden">
+      <div className="pointer-events-none absolute -top-24 right-0 h-72 w-72 rounded-full bg-amber-200/40 blur-[120px] dark:bg-amber-500/10"></div>
+      <div className="pointer-events-none absolute bottom-0 left-0 h-80 w-80 rounded-full bg-neutral-200/50 blur-[140px] dark:bg-slate-800/60"></div>
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-white/70 to-transparent dark:from-white/5"></div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 relative">
         {/* Header Section */}
-        <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold text-slate-900 dark:text-white mb-4">
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#d5b66f] bg-[#fff4d6] px-4 py-1 text-[11px] font-semibold uppercase tracking-[0.35em] text-[#8a6a2d] shadow-sm dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-200">
+            Maison collection
+          </div>
+          <h1 className="text-4xl sm:text-6xl font-semibold text-[#1b1b1f] dark:text-white mt-4 mb-3 tracking-tight">
             All Products
           </h1>
-          <p className="text-gray-600 dark:text-gray-300 text-xl max-w-2xl mx-auto leading-relaxed">
+          <p className="text-[#4b4a44] dark:text-slate-300 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
             Discover our carefully curated collection of premium products
           </p>
-          <div className="mt-6 flex items-center justify-center gap-2">
-            <div className="h-1 w-12 bg-amber-400 rounded"></div>
-            <div className="h-1 w-6 bg-slate-300 dark:bg-slate-700 rounded"></div>
-            <div className="h-1 w-12 bg-amber-400 rounded"></div>
+          <div className="mt-6 flex items-center justify-center gap-3">
+            <div className="h-px w-12 bg-[#caa65b]"></div>
+            <div className="h-2 w-2 rounded-full bg-[#caa65b]"></div>
+            <div className="h-px w-12 bg-[#caa65b]"></div>
           </div>
         </div>
-        <SearchProduct search={search} setSearch={setSearch} />
+        <div className="grid gap-10 lg:grid-cols-[320px_1fr] lg:items-start">
+          <aside className="lg:sticky lg:top-6">
+            <div className="rounded-[32px] border border-[#e5dccb] bg-gradient-to-br from-white/95 via-white/90 to-[#fff7e6]/80 shadow-[0_28px_80px_-50px_rgba(0,0,0,0.45)] backdrop-blur dark:border-slate-800 dark:from-slate-950/80 dark:via-slate-950/70 dark:to-slate-900/70">
+              <div className="px-6 pt-6">
+                <div className="flex flex-col gap-2">
+                  <p className="text-xs uppercase tracking-[0.35em] text-[#a18b5a]">Find your piece</p>
+                  <h2 className="text-lg font-semibold text-[#1f1e1b] dark:text-white">Search & refine</h2>
+                  <div className="text-xs text-[#8a8174] dark:text-slate-400">
+                    {filteredProducts.length} items available
+                  </div>
+                </div>
+              </div>
+              <div className="px-6 pt-4">
+                <SearchProduct search={search} setSearch={setSearch} />
+              </div>
 
-        {/* Category Filter */}
-        <div className="mb-8">
-          <div className="flex flex-wrap justify-center gap-3">
-            <button
-              onClick={() => setSelectedCategory('all')}
-              className={`px-4 py-2 rounded-full font-medium transition-colors ${
-                selectedCategory === 'all'
-                  ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
-                  : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
-              }`}
-            >
-              All
-            </button>
-            {categoryData.map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-full font-medium transition-colors capitalize ${
-                  selectedCategory === category
-                    ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
-                    : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Products Count */}
-        <div className="mb-8">
-          <p className="text-gray-500 dark:text-gray-400 text-center">
-            Showing <span className="font-semibold text-gray-700 dark:text-gray-200">
-              {products
-                .filter(product => {
-                  const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
-                  const matchesSearch = search === '' || 
-                    product.title.toLowerCase().includes(search.toLowerCase()) ||
-                    product.description.toLowerCase().includes(search.toLowerCase()) ||
-                    product.category.toLowerCase().includes(search.toLowerCase());
-                  return matchesCategory && matchesSearch;
-                }).length}
-              </span> products
-            {search && (
-              <span className="ml-2 text-amber-600 dark:text-amber-400">
-                for "{search}"
-              </span>
-            )}
-          </p>
-        </div>
-
-        {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {products
-            .filter(product => {
-              const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
-              const matchesSearch = search === '' || 
-                product.title.toLowerCase().includes(search.toLowerCase()) ||
-                product.description.toLowerCase().includes(search.toLowerCase()) ||
-                product.category.toLowerCase().includes(search.toLowerCase());
-              return matchesCategory && matchesSearch;
-            })
-            .map((product, index) => (
-            <div 
-              key={product.id}
-              className="transform transition-all duration-300 hover:scale-105"
-              style={{ animationDelay: `${index * 50}ms` }}
-            >
-              <ProductCard product={product} />
+              {/* Filters */}
+              <div className="px-6 pb-6">
+                <div className="mt-4 grid gap-5">
+                  <div className="flex flex-wrap items-center justify-start gap-2">
+                    <button
+                      onClick={() => setSelectedCategory('all')}
+                      className={`px-4 py-2 rounded-full text-sm font-semibold transition-all shadow-sm ${
+                        selectedCategory === 'all'
+                          ? 'bg-[#1b1b1f] text-white dark:bg-white dark:text-slate-900'
+                          : 'bg-[#f1ede6] text-[#5a554a] hover:bg-[#e6dfd3] dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-800'
+                      }`}
+                    >
+                      All
+                    </button>
+                    {categoryData.map((category) => (
+                      <button
+                        key={category}
+                        onClick={() => setSelectedCategory(category)}
+                        className={`px-4 py-2 rounded-full text-sm font-semibold transition-all shadow-sm capitalize ${
+                          selectedCategory === category
+                            ? 'bg-[#1b1b1f] text-white dark:bg-white dark:text-slate-900'
+                            : 'bg-[#f1ede6] text-[#5a554a] hover:bg-[#e6dfd3] dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-800'
+                        }`}
+                      >
+                        {category}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="grid gap-3 rounded-2xl border border-[#e5dccb] bg-[#fffaf2] p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950/60">
+                    <ProductRange
+                      min={priceBounds.min}
+                      max={priceBounds.max}
+                      value={priceRange}
+                      compact
+                      onChange={(nextRange) => {
+                        setPriceTouched(true)
+                        setPriceRange(nextRange)
+                      }}
+                    />
+                    <FilterByRating value={minRating} onChange={setMinRating} />
+                  </div>
+                </div>
+              </div>
             </div>
-          ))}
-        </div>
+          </aside>
 
-        {/* No Results Message */}
-        {products
-          .filter(product => {
-            const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
-            const matchesSearch = search === '' || 
-              product.title.toLowerCase().includes(search.toLowerCase()) ||
-              product.description.toLowerCase().includes(search.toLowerCase()) ||
-              product.category.toLowerCase().includes(search.toLowerCase());
-            return matchesCategory && matchesSearch;
-          }).length === 0 && (
-          <div className="text-center py-16">
-            <div className="text-gray-400 text-6xl mb-4">🔍</div>
-            <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2">
-              No products found
-            </h3>
-            <p className="text-gray-500 dark:text-gray-400 mb-6">
-              {search ? `No results for "${search}"` : 'No products in this category'}
-            </p>
-            <button
-              onClick={() => {
-                setSearch('');
-                setSelectedCategory('all');
-              }}
-              className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 px-6 py-3 rounded-lg font-semibold transition-colors"
-            >
-              Clear Filters
-            </button>
-          </div>
-        )}
+          <section>
+            {/* Products Count */}
+            <div className="mb-6">
+              <p className="text-slate-500 dark:text-slate-400 text-center lg:text-left">
+                Showing <span className="font-semibold text-[#2b2a26] dark:text-slate-200">
+                  {filteredProducts.length}
+                </span> products
+                {search && (
+                  <span className="ml-2 text-amber-600 dark:text-amber-400">
+                    for "{search}"
+                  </span>
+                )}
+              </p>
+            </div>
+
+            {/* Products Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-7">
+              {filteredProducts.map((product, index) => (
+                <div 
+                  key={product.id}
+                  className="transform transition-all duration-300 hover:scale-[1.02] hover:-translate-y-2"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  <ProductCard product={product} />
+                </div>
+              ))}
+            </div>
+
+            {/* No Results Message */}
+            {filteredProducts.length === 0 && (
+              <div className="py-12">
+                <div className="mx-auto max-w-xl rounded-[28px] border border-[#e5dccb] bg-white/90 p-10 text-center shadow-[0_18px_40px_-30px_rgba(0,0,0,0.3)] backdrop-blur dark:border-slate-800 dark:bg-slate-900/70">
+                  <div className="text-[#b8b1a6] text-6xl mb-4">🔍</div>
+                  <h3 className="text-xl font-semibold text-slate-700 dark:text-slate-200 mb-2">
+                    No products found
+                  </h3>
+                  <p className="text-slate-500 dark:text-slate-400 mb-6">
+                    {search ? `No results for "${search}"` : 'No products in this category'}
+                  </p>
+                  <button
+                    onClick={() => {
+                      setSearch('');
+                      setSelectedCategory('all');
+                      setPriceTouched(false)
+                      setPriceRange(priceBounds)
+                      setMinRating(0)
+                    }}
+                    className="bg-[#1b1b1f] hover:bg-black text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                  >
+                    Clear Filters
+                  </button>
+                </div>
+              </div>
+            )}
+          </section>
+        </div>
 
         {/* Footer Message */}
-        <div className="text-center mt-16 pt-8 border-t border-gray-200 dark:border-slate-700">
-          <p className="text-gray-500 dark:text-gray-400">
+        <div className="text-center mt-16 pt-8 border-t border-[#e5dccb] dark:border-slate-800">
+          <p className="text-[#4b4a44] dark:text-slate-400">
             Can't find what you're looking for? 
             <span className="text-amber-600 dark:text-amber-400 font-semibold cursor-pointer hover:underline ml-1">
               Contact us
