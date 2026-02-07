@@ -1,4 +1,5 @@
-import { createContext, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
+import { AuthContext } from '../hooks/authContext'
 
 const STORAGE_KEY = 'auth_user'
 
@@ -11,8 +12,6 @@ const getStoredUser = () => {
     return null
   }
 }
-
-export const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(getStoredUser)
