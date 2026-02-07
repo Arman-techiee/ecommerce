@@ -174,9 +174,11 @@ function CartPage() {
                 </div>
               )}
 
-              <button className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold py-4 px-6 rounded-2xl text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl mb-4">
-                Proceed to Checkout
-              </button>
+              <Link to="/checkout">
+                <button className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold py-4 px-6 rounded-2xl text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl mb-4">
+                  Proceed to Checkout
+                </button>
+              </Link>
               
               <Link to="/products">
                 <button className="w-full border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-amber-300 dark:hover:border-amber-500 hover:text-amber-600 dark:hover:text-amber-300 font-semibold py-3 px-6 rounded-2xl transition-all duration-300">
