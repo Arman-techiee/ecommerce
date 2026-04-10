@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import ProductCard from '../components/products/ProductCard'
 import { Link, useNavigate } from 'react-router-dom'
 import { useCart } from '../hooks/useCart'
+import catalogProducts from '../data/catalogProducts'
 
 function Homepage() {
   const [products, setProducts] = useState([])
@@ -18,9 +19,7 @@ function Homepage() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const response = await fetch('https://fakestoreapi.com/products?limit=30')
-        const data = await response.json()
-        setProducts(data)
+        setProducts(catalogProducts)
       } catch (error) {
         console.error('Error fetching products', error)
       } finally {

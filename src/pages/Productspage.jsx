@@ -5,6 +5,7 @@ import SearchProduct from '../components/products/SearchProduct';
 import ProductRange from '../components/products/ProductRange'
 import FilterByRating from '../components/products/FilterByRating'
 import { useLocation } from 'react-router-dom'
+import catalogProducts from '../data/catalogProducts'
 
 // Additional mock products to supplement the API
 const additionalProducts = [
@@ -447,15 +448,11 @@ export default function Productspage() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const response = await fetch('https://fakestoreapi.com/products');
-        const data = await response.json();
-        // Combine API products with additional mock products
-        setProducts([...data, ...additionalProducts]);
+        setProducts(catalogProducts);
       }
       catch(error) {
         console.error('Error fetching products', error);
-        // If API fails, use only additional products
-        setProducts(additionalProducts);
+        setProducts(catalogProducts);
         setError('Some products may not be available. Showing available items.');
       }
       finally {

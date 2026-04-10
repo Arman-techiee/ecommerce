@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useCart } from '../hooks/useCart'
+import catalogProducts from '../data/catalogProducts'
 
 // Additional mock products to match ProductsPage
 const additionalProducts = [
@@ -431,26 +432,8 @@ function SingleProductPage() {
     async function fetchProduct() {
       try {
         const productId = parseInt(params.id)
-
-        // Check if it's one of our additional products first
-        const additionalProduct = additionalProducts.find((p) => p.id === productId)
-        if (additionalProduct) {
-          setProduct(additionalProduct)
-          setLoading(false)
-          return
-        }
-
-        // Otherwise fetch from API
-        const response = await fetch(`https://fakestoreapi.com/products/${params.id}`)
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-        const text = await response.text()
-        if (!text) {
-          throw new Error('Empty response')
-        }
-        const data = JSON.parse(text)
-        setProduct(data)
+        const selectedProduct = catalogProducts.find((p) => p.id === productId)
+        setProduct(selectedProduct ?? null)
       } catch (error) {
         console.error('Error fetching product', error)
       } finally {
